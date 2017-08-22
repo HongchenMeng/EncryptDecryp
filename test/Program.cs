@@ -9,19 +9,34 @@ namespace UtilsEncryptDecryp
     {
         static void Main(string[] args)
         {
-            AES aes = new AES();
+            //AES aes = new AES();
             //int x = 1;
             //int y = 2;
             //aes.thisEncoding = Encoding.ASCII;
-            string s = "我是中国人！！@@";
-            string s0 = @"C:\Users\Administrator\Desktop\EncryptFile\jb51.net.txt";
-            string s1 = aes.AESEncrypt(s);
-           // aes.AESEncrypt(s0, RefreshDirProgress);
-          //  aes.AESDecrypt(s0, RefreshDirProgress);
-            string s2 = aes.AESDecrypt(s1);
+            //  string s = "我是中国人！！@@";
+            string ss = @"C:\Users\Administrator\Desktop\XZ_8_18.apk";
+            //  string s1 = aes.AESEncrypt(s);
+            // // aes.AESEncrypt(s0, RefreshDirProgress);
+            ////  aes.AESDecrypt(s0, RefreshDirProgress);
+            //  string s2 = aes.AESDecrypt(s1);
+            MD5 md5 = new MD5();
+            string s0 = @"RtdArrayTest.TestRtdServer";
+            string s1 = md5.GetMD5WithString(s0);
+            string s2 = md5.GetMd5(s0);
+            string s3 = md5.GetMD5String(s0);
+
+
             Console.WriteLine(s1);
             Console.WriteLine(s2);
-           // Console.WriteLine("===================");
+            Console.WriteLine(s3);
+            Console.WriteLine("==============");
+            string s5 = md5.GetFileMd5(ss);
+            string s4 = md5.GetMD5WithFilePath(ss);
+
+            Console.WriteLine(s4);
+            Console.WriteLine(s5);
+            // Console.WriteLine(s2);
+            // Console.WriteLine("===================");
             Console.ReadLine();
             //EncryptDecryp ed = new EncryptDecryp();
             //string a = "19880814";
