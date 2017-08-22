@@ -12,6 +12,12 @@ namespace UtilsEncryptDecryp
     /// </summary>
     public class AES
     {
+        #region 常量 密钥、向量的初始默认值
+        private const string _KeyC = @"Bvàsv@¬w»hj}84øí8þX¨±½úmCã6ªùÅuW×4Ãv¥9Sþ¬ããáüfêÃòBÊÐTÈÞz-^êe¸ïNSµ";
+        private const string _IVC = @"KIã¯£áz5G@ziå÷ü)½â²¯×u§büêÑî«$<±ØÏTÎjþæhwáì%9ÒQMBtÚÅThI´®sßÁäÅEc&ù¢àbÖ[-nqCMô^âê^ôþÚds#YýÊUýæªw°KAO%üPÔ1%üËç>Y!ÊcÏòÊW<Ù¢qÅûÞþÚPþäþCÿVþVI@Ék®lÓöÀËH¦xlø¹fÛÀÝt5b1·Í¾N«mÓ¨ñQg4À2å%Bdeä¾e¿r>ôÑÄ¤B0³ëu à9UöTñüß¢XÏ^>mVXÀlÊöEË»±6¨_¡¯ì9_ÿÓøÍÃâKùqðmB7ØkV «üøÀÜhyUÙ#´t<ÕÿÅ¨p)§!LðÕItC&åä7Þ#}»ùñËwÐþäJF-ù¼ÿ»É¦¤§ÞÚ©DU¸V½H-§øR¦g2ù<$ôGqqßý²ôÁj¨®Ñµ5Æ«6Ð9zO7µ°þnXWÉÎ°ÏÈQÈTPã@ZþÔOàú2Ö×Ï§ÈgóñaÝÏÄ4wÆ7Oá¶nØØñ¯V²<í«ÞÕáË#s1·n¢¬åwHÞïu©]§èrn*»¼ØÎ&Gb´¸Enû·-þ^#Jé¸£¬)ÂüRAÆ õG>#Ü²DÛnn·ç17F9úI°S(YÁ®õOîÀÉ#è9®ü$¦£Ás´øõaÁrÀÆZ^Ü¯B×£5H3íß&^1G¾S§*HÆ";
+        #endregion
+
+        #region 属性
         private Encoding _thisEncoding = Encoding.UTF8;
         public Encoding thisEncoding
         {
@@ -25,7 +31,7 @@ namespace UtilsEncryptDecryp
             }
         }
 
-        private string _Key = @"sdf523#@%g^[ds0]{dsds=-ED>sfsw<9.>?$!2gdrtydgh";
+        private string _Key ;
         /// <summary>
         /// 获取密钥
         /// </summary>
@@ -41,12 +47,13 @@ namespace UtilsEncryptDecryp
                 return _Key;
             }
         }
-        private string _IV= @"=-f30976DFGE!`dfg|}{dfds9?sdf81FDGE|[;876wer";
-
+        #region  向量默认值
+        private string _IV;
+        #endregion
         /// <summary>
         /// 获取向量
         /// </summary>
-       public string IV
+        public string IV
         {
             set
             {
@@ -58,18 +65,25 @@ namespace UtilsEncryptDecryp
             }
         }
 
-        private string _Sotl = @"#sfRTSfsd,.,lkgks|]./ewr:FDGT124yurtdf";
-        public string Sotl
+        #endregion
+
+        #region 构造函数
+       public  AES()
         {
-            set
-            {
-                _Sotl = value;
-            }
-            get
-            {
-                return _Sotl;
-            }
+            Key = _KeyC;
+            IV = _IVC;
         }
+        public AES(string key)
+        {
+            Key = key;
+            IV = _IVC;
+        }
+        public AES(string key,string iv)
+        {
+            Key = key;
+            IV = iv;
+        }
+        #endregion
         #region AES加密/解密 字节数组
 
         #region 加密字节数组
@@ -82,20 +96,19 @@ namespace UtilsEncryptDecryp
         /// <returns></returns>
         public byte[] AESEncrypt(byte[] EncryptByte, string key,string iv)
         {
-            
+
             if (EncryptByte.Length == 0) { throw (new Exception("明文不得为空")); }
-            if (string.IsNullOrEmpty(key)) { throw (new Exception("密钥不得为空")); }
             byte[] resultArray;//返回的数组
 
+            MD5 md5 = new UtilsEncryptDecryp.MD5();
 
-            PasswordDeriveBytes pdb1 = new PasswordDeriveBytes(key, thisEncoding.GetBytes(Sotl));
-            byte[] _bIV = pdb1.GetBytes(16);
-            //byte[] _bIV = _bIV = UTF8Encoding.UTF8.GetBytes(iv);
+            byte[] _bIV = UTF8Encoding.UTF8.GetBytes(md5.GetMD5WithString(iv).Substring(16));
+            byte[] _btheKey = UTF8Encoding.UTF8.GetBytes(md5.GetMD5WithString(key));
 
-            //byte[] _btheKey = new byte[32];
-            //_btheKey = UTF8Encoding.UTF8.GetBytes(key);
-            PasswordDeriveBytes pdb = new PasswordDeriveBytes(key, _bIV);
-            byte[] _btheKey= pdb.GetBytes(32);
+            //PasswordDeriveBytes pdb = new PasswordDeriveBytes(key, _bIV);
+            //byte[] _btheKey= pdb.GetBytes(32);
+
+
             //Rijndael aes = Rijndael.Create();
 
             RijndaelManaged aes = new RijndaelManaged();
@@ -168,19 +181,15 @@ namespace UtilsEncryptDecryp
         {
 
             if (DecryptByte.Length == 0) { throw (new Exception("密文不得为空")); }
-            if (string.IsNullOrEmpty(key)) { throw (new Exception("密钥不得为空")); }
             byte[] resultArray;//返回的数组
 
+            MD5 md5 = new UtilsEncryptDecryp.MD5();
 
-            PasswordDeriveBytes pdb1 = new PasswordDeriveBytes(key, thisEncoding.GetBytes(Sotl));
-            byte[] _bIV = pdb1.GetBytes(16);
-            // byte[] _bIV = _bIV = UTF8Encoding.UTF8.GetBytes(iv);
+            byte[] _bIV = UTF8Encoding.UTF8.GetBytes(md5.GetMD5WithString(iv).Substring(16));
+            byte[] _btheKey = UTF8Encoding.UTF8.GetBytes(md5.GetMD5WithString(key));
 
-            //byte[] _btheKey = new byte[32];
-            //_btheKey = UTF8Encoding.UTF8.GetBytes(key);
-            PasswordDeriveBytes pdb = new PasswordDeriveBytes(key, _bIV);
-            byte[] _btheKey = pdb.GetBytes(32);
-            //Rijndael aes = Rijndael.Create();
+            //PasswordDeriveBytes pdb = new PasswordDeriveBytes(key, _bIV);
+            //byte[] _btheKey= pdb.GetBytes(32);
 
             //Rijndael aes = Rijndael.Create();
             RijndaelManaged aes = new RijndaelManaged();
@@ -252,6 +261,7 @@ namespace UtilsEncryptDecryp
         /// <returns></returns>
         public string AESEncrypt(string EncryptSting, string key, string iv)
         {
+            if (EncryptSting.Length == 0) { throw (new Exception("明文不得为空")); }
             byte[] EncryptArray = _thisEncoding.GetBytes(EncryptSting);
             byte[] resultArray= AESEncrypt(EncryptArray, key, iv);
             return Convert.ToBase64String(resultArray);
@@ -314,7 +324,7 @@ namespace UtilsEncryptDecryp
         /// <returns></returns>
         public string AESDecrypt(string DecryptString, string key,string iv)
         {
-
+            if (DecryptString.Length == 0) { throw (new Exception("密文不得为空")); }
             byte[] DecryptArray = Convert.FromBase64String(DecryptString);
             byte[] resultArray = AESDecrypt(DecryptArray, key, iv);
             return _thisEncoding.GetString(resultArray);
